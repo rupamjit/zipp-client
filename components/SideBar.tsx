@@ -1,4 +1,12 @@
-import { Bell, Bookmark, Dribbble, Mail, Search, User } from "lucide-react";
+import {
+  Bell,
+  Bookmark,
+  CircleEllipsis,
+  Dribbble,
+  Mail,
+  Search,
+  User,
+} from "lucide-react";
 import { House } from "lucide-react";
 
 interface SidebarItemsTypes {
@@ -31,6 +39,10 @@ const SidebarItems: SidebarItemsTypes[] = [
     title: "Profile",
     icon: <User />,
   },
+  {
+    title: "More",
+    icon: <CircleEllipsis />,
+  },
 ];
 
 const SideBar = () => {
@@ -40,11 +52,11 @@ const SideBar = () => {
         <Dribbble size={50} className=" text-blue-600" />
         <span className="text-5xl font-extrabold">Quizz</span>
       </div>
-      <div className="mt-4 text-2xl font-bold">
+      <div className="mt-4 text-2xl  font-bold">
         <ul>
           {SidebarItems.map((item, _idx) => (
             <li
-              className="flex justify-start hover:bg-neutral-700 cursor-pointer w-fit rounded-4xl px-4 py-2  items-center gap-2"
+              className="flex justify-start hover:bg-neutral-700 cursor-pointer w-fit rounded-4xl px-4 py-3  items-center gap-5"
               key={_idx}
             >
               <span>{item.icon}</span>
