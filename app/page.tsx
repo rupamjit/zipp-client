@@ -7,18 +7,32 @@ import { useCurrentUser } from "@/hooks/user";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { Image as Image1 } from "lucide-react";
-import { useGetAllTweets } from "@/hooks/tweet";
+import { useCreateTweet, useGetAllTweets } from "@/hooks/tweet";
 import { Tweet } from "@/gql/graphql";
 
 export default function Home() {
   const { user } = useCurrentUser();
-  const {tweets} = useGetAllTweets()
+  const { tweets } = useGetAllTweets();
+  const { mutate } = useCreateTweet();
   // console.log(user);
 
+  const [content, setContent] = useState("");
+
   const queryClient = useQueryClient();
+
+  const handleCreatePost = useCallback(() => {
+    if(content.length<=0){
+      toast.error("Post cannot be empty")
+      return;
+    }
+    mutate({
+      content,
+    });
+    setContent("");
+  }, [content, mutate]);
 
   const handleLoginWithGoogle = useCallback(
     async (cred: CredentialResponse) => {
@@ -35,8 +49,8 @@ export default function Home() {
         toast.success("Verified Success");
         if (verifyGoogleToken) {
           window.localStorage.setItem("__quizz__token", verifyGoogleToken);
-          // @ts-ignore
-          await queryClient.invalidateQueries(["current-user"]);
+
+          await queryClient.invalidateQueries({ queryKey: ["current-user"] });
         } else {
           toast.error("No token received");
         }
@@ -77,6 +91,8 @@ export default function Home() {
                 </div>
                 <div className="col-span-11 ">
                   <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                     placeholder="What's happening?"
                     className="text-xl px-3 w-full outline-none  bg-transparent border-b border-slate-800"
                     name=""
@@ -85,7 +101,10 @@ export default function Home() {
                   ></textarea>
                   <div className="text-blue-500 mt-2 flex  justify-between items-center">
                     <Image1 onClick={handleSelectImage} size={20} />
-                    <button className="bg-white text-sm text-black mx-3 font-semibold py-2 px-3 cursor-pointer rounded-full ">
+                    <button
+                      onClick={handleCreatePost}
+                      className="bg-white text-sm text-black mx-3 font-semibold py-2 px-3 cursor-pointer rounded-full "
+                    >
                       Post
                     </button>
                   </div>
@@ -94,11 +113,9 @@ export default function Home() {
             </div>
           </div>
 
-{
-  tweets?.map((tweet)=>tweet ?<FeedCard key={tweet?.id} data={tweet as Tweet}/>:null)
-}
-
-      
+          {tweets?.map((tweet) =>
+            tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
+          )}
         </div>
         <div className="col-span-3">
           {!user && (
