@@ -10,10 +10,13 @@ import Image from "next/image";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { Image as Image1 } from "lucide-react";
+import { useGetAllTweets } from "@/hooks/tweet";
+import { Tweet } from "@/gql/graphql";
 
 export default function Home() {
   const { user } = useCurrentUser();
-  console.log(user);
+  const {tweets} = useGetAllTweets()
+  // console.log(user);
 
   const queryClient = useQueryClient();
 
@@ -90,15 +93,12 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
-          <FeedCard />
+
+{
+  tweets?.map((tweet)=>tweet ?<FeedCard key={tweet?.id} data={tweet as Tweet}/>:null)
+}
+
+      
         </div>
         <div className="col-span-3">
           {!user && (
